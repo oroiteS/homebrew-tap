@@ -5,14 +5,14 @@
 ## 安装
 
 ```bash
-brew install --cask oroiteS/tap/todolite
+brew install --cask --no-quarantine oroiteS/tap/todolite
 ```
 
 或先 tap 再安装:
 
 ```bash
 brew tap oroiteS/tap
-brew install --cask oroiteS/tap/todolite
+brew install --cask --no-quarantine oroiteS/tap/todolite
 ```
 
 > [!NOTE]
