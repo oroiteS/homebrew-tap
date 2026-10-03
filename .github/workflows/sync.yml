@@ -1,0 +1,24 @@
+name: Sync casks from upstream releases
+
+on:
+  schedule:
+    - cron: "*/30 * * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: sync-casks
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Sync casks
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: ./script/sync.sh
