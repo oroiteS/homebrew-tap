@@ -15,6 +15,11 @@ brew tap oroiteS/tap
 brew install --cask oroiteS/tap/todolite
 ```
 
+> [!NOTE]
+> 应用尚未做 Apple 签名与公证，首次打开若提示「已损坏」，运行：
+> `xattr -dr com.apple.quarantine /Applications/TodoLite.app`
+> 或安装时带 `--no-quarantine`。
+
 ## 当前收录
 
 | 名称 | 类型 | 上游仓库 |
