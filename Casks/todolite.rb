@@ -1,9 +1,9 @@
 cask "todolite" do
   arch arm: "aarch64", intel: "x64"
 
-  version "0.2.0"
-  sha256 arm:   "c7b7ac494ad47d5e6ff2602ba581d4198db2b7b44c18d325c20652553b662f56",
-         intel: "87dcffe6ada8f4113335b95d15bcb9860f5e305b5e2442c332660456870b201d"
+  version "0.2.2"
+  sha256 arm:   "881e6d233f0544b61aaf83f867202df02a19477fc5177159ce4f67b15d9e7f46",
+         intel: "e01375bd2e1364c832575ac7c44c28682a97cf9ab9c9c15a096c803e6cae343c"
 
   url "https://github.com/oroiteS/todo/releases/download/v#{version}/TodoLite_#{version}_#{arch}.dmg"
   name "TodoLite"
