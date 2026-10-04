@@ -5,20 +5,23 @@
 ## 安装
 
 ```bash
-brew install --cask --no-quarantine oroiteS/tap/todolite
+brew install --cask oroiteS/tap/todolite
+xattr -dr com.apple.quarantine /Applications/TodoLite.app
 ```
 
 或先 tap 再安装:
 
 ```bash
 brew tap oroiteS/tap
-brew install --cask --no-quarantine oroiteS/tap/todolite
+brew install --cask oroiteS/tap/todolite
+xattr -dr com.apple.quarantine /Applications/TodoLite.app
 ```
 
 > [!NOTE]
-> 应用尚未做 Apple 签名与公证，`--no-quarantine` 用于跳过 Gatekeeper 隔离标记；
-> 若不带该参数安装、首次打开提示「已损坏」，运行：
-> `xattr -dr com.apple.quarantine /Applications/TodoLite.app`
+> 应用尚未做 Apple 签名与公证。brew 7 已移除 `--no-quarantine` 选项
+> （Homebrew 4.7.0 起弃用），无法在安装时跳过隔离标记，所以安装后
+> **就是要执行一次** `xattr -dr com.apple.quarantine /Applications/TodoLite.app`
+> 去掉 Gatekeeper 隔离标记，否则首次打开提示「已损坏」。
 
 ## 当前收录
 
