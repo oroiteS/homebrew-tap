@@ -5,9 +5,14 @@ set -euo pipefail
 
 declare -A UPSTREAM=(
   [todolite]="oroiteS/todo"
+  [feiwu]="oroiteS/quark-downloader"
 )
 declare -A ASSET_PREFIX=(
   [todolite]="TodoLite"   # 资产命名:TodoLite_<版本>_aarch64.dmg / _x64.dmg
+)
+# universal 单文件资产(单 sha256):ASSET_TEMPLATE 里写完整资产名模板。
+declare -A ASSET_TEMPLATE=(
+  [feiwu]="feiwu-v{version}-macos-universal.dmg"
 )
 
 git config user.name "github-actions[bot]"
@@ -19,10 +24,39 @@ for token in "${!UPSTREAM[@]}"; do
   file="Casks/$token.rb"
   [[ -f $file ]] || { echo "::warning::$file 不存在,跳过 $token"; continue; }
 
-  tag=$(gh api "repos/$repo/releases/latest" --jq .tag_name)
+  # 上游暂无 release(如仓库刚转公开、首版未发)时安全跳过,不阻断其他 cask
+  tag=$(gh api "repos/$repo/releases/latest" --jq .tag_name 2>/dev/null) || true
+  if [[ -z ${tag:-} ]]; then
+    echo "::warning::$repo 暂无 release,跳过 $token"
+    continue
+  fi
   version="${tag#v}"
   if grep -q "version \"$version\"" "$file"; then
     echo "$token: 已是 $version,无需更新"
+    continue
+  fi
+
+  # universal 单 sha256 分支:取模板资产的单 digest,替换单行 sha256
+  if [[ -n ${ASSET_TEMPLATE[$token]:-} ]]; then
+    asset="${ASSET_TEMPLATE[$token]//\{version\}/$version}"
+    sha=$(gh api "repos/$repo/releases/latest" --jq \
+      ".assets[] | select(.name == \"$asset\") | .digest // empty" \
+      | head -n1 | sed 's/^sha256://')
+    if [[ -z $sha ]]; then   # 老资产可能没有 digest 字段,下载兜底
+      sha=$(curl -fsSL "https://github.com/$repo/releases/download/$tag/$asset" | shasum -a 256 | awk '{print $1}')
+    fi
+    [[ -n $sha ]] || { echo "::error::$token $version 缺少 sha256"; exit 1; }
+
+    sed -i.bak \
+      -e "s/^  version \".*\"$/  version \"$version\"/" \
+      -e "s/^  sha256 \"[0-9a-f]*\"$/  sha256 \"$sha\"/" \
+      "$file"
+    rm -f "$file.bak"
+
+    git add "$file"
+    git commit -q -m "bump $token to $version"
+    echo "$token: $version (universal=$sha)"
+    changed=1
     continue
   fi
 
