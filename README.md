@@ -30,6 +30,23 @@ xattr -dr com.apple.quarantine /Applications/TodoLite.app
 > **就是要执行一次** `xattr -dr com.apple.quarantine /Applications/TodoLite.app`
 > 去掉 Gatekeeper 隔离标记，否则首次打开提示「已损坏」。
 
+### feiwu
+
+夸克网盘分享链接解析下载器(Go + Wails 原生窗口),上游
+[oroiteS/quark-downloader](https://github.com/oroiteS/quark-downloader)。
+
+安装:
+
+```bash
+brew install --cask oroiteS/tap/feiwu
+xattr -dr com.apple.quarantine /Applications/feiwu.app
+```
+
+> [!NOTE]
+> 同样未签名公证,首次打开前需执行一次 `xattr -dr com.apple.quarantine
+> /Applications/feiwu.app`,否则提示「已损坏」。dmg 为 universal 单文件,
+> Apple Silicon 与 Intel 通用。
+
 ## 自动同步
 
 `.github/workflows/sync.yml` 按 cron `*/30 * * * *`(即每 30 分钟)运行
@@ -43,4 +60,5 @@ xattr -dr com.apple.quarantine /Applications/TodoLite.app
 (已启用 `workflow_dispatch`)。
 
 新增应用:`Casks/` 添加 cask 文件,并在 `script/sync.sh` 的 `UPSTREAM`、
-`ASSET_PREFIX` 两个映射里各加一行,最后在「收录应用」按同样格式加一节。
+`ASSET_PREFIX`(双架构资产)或 `ASSET_TEMPLATE`(universal 单文件资产)映射里
+按需各加一行,最后在「收录应用」按同样格式加一节。

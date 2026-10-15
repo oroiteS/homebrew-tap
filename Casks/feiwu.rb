@@ -10,7 +10,7 @@ cask "feiwu" do
   desc "夸克网盘分享链接解析下载器"
   homepage "https://github.com/oroiteS/quark-downloader"
 
-  auto_updates true
+  # 不声明 auto_updates：上游无自更新机制，如实以保证 brew upgrade 可达
   depends_on macos: ">= :big_sur"
 
   livecheck do
@@ -20,6 +20,9 @@ cask "feiwu" do
 
   app "feiwu.app"
 
-  # 数据目录对齐 store/paths.go（macOS 平台默认 UserConfigDir/feiwu）
-  zap trash: "~/Library/Application Support/feiwu"
+  # 数据目录对齐 internal/store/paths.go（macOS 平台默认 UserConfigDir/feiwu）
+  zap trash: [
+    "~/Library/Application Support/feiwu",
+    "~/Library/WebKit/com.feiwu.downloader",
+  ]
 end

@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # 读取各上游仓库的最新 Release,自动更新对应 cask 的 version/sha256 并提交。
-# 新增应用:Casks/ 加 cask 文件,并在下面两个映射里各加一行。
+# 新增应用:Casks/ 加 cask 文件,并在 UPSTREAM、ASSET_PREFIX、ASSET_TEMPLATE
+# (universal 单文件资产用)三个映射里按需各加一行。
 set -euo pipefail
 
 declare -A UPSTREAM=(
@@ -43,9 +44,13 @@ for token in "${!UPSTREAM[@]}"; do
       ".assets[] | select(.name == \"$asset\") | .digest // empty" \
       | head -n1 | sed 's/^sha256://')
     if [[ -z $sha ]]; then   # 老资产可能没有 digest 字段,下载兜底
-      sha=$(curl -fsSL "https://github.com/$repo/releases/download/$tag/$asset" | shasum -a 256 | awk '{print $1}')
+      # 兜底失败不硬退(否则 feiwu 异常会阻断 todolite 自动 bump),CI 红灯经 ::error:: 可见
+      sha=$(curl -fsSL "https://github.com/$repo/releases/download/$tag/$asset" | shasum -a 256 | awk '{print $1}' || true)
     fi
-    [[ -n $sha ]] || { echo "::error::$token $version 缺少 sha256"; exit 1; }
+    if [[ -z $sha ]]; then
+      echo "::error::$token $version 缺少 sha256,跳过(不阻断其他 cask)"
+      continue
+    fi
 
     sed -i.bak \
       -e "s/^  version \".*\"$/  version \"$version\"/" \
