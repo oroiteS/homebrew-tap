@@ -11,7 +11,7 @@ cask "feiwu" do
   homepage "https://github.com/oroiteS/quark-downloader"
 
   # 不声明 auto_updates：上游无自更新机制，如实以保证 brew upgrade 可达
-  depends_on macos: ">= :big_sur"
+  depends_on macos: :big_sur
 
   livecheck do
     url :url
