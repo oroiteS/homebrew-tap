@@ -2,7 +2,7 @@ cask "openwithpanel" do
   # version/sha256 由 OpenWithPanel 仓库的 scripts/package.sh 生成
   # （.build/dist/openwithpanel.rb），或由 script/sync.sh 依据最新 Release 自动更新
   version "0.1.1"
-  sha256 "4e012aeefe512df1d6d3f688d193599befba33df54404f4050f825098fd01c85"
+  sha256 "3cd06d28a31c5b271a44fd82a022c1dd548be62163e74f7556d7a5e7332ba6b4"
 
   url "https://github.com/oroiteS/openwithpanel/releases/download/v#{version}/OpenWithPanel-#{version}.dmg"
   name "OpenWithPanel"
