@@ -47,6 +47,28 @@ xattr -dr com.apple.quarantine /Applications/feiwu.app
 > /Applications/feiwu.app`,否则提示「已损坏」。dmg 为 universal 单文件,
 > Apple Silicon 与 Intel 通用。
 
+### openwithpanel
+
+管理 macOS 默认应用:按文件类型、扩展名、链接协议设置默认打开方式,还能设置
+无扩展名文件(`.env`、`.gitignore`、`Dockerfile`、`.npmrc`)的默认编辑器
+——Finder 的「显示简介 › 打开方式 › 全部更改」对这些文件无效。上游
+[oroiteS/openwithpanel](https://github.com/oroiteS/openwithpanel),fork 自
+[zhaojiannet/openwithpanel](https://github.com/zhaojiannet/openwithpanel)。
+
+要求 macOS 26 Tahoe 或更高版本(Uninstall 时也需要)。
+
+安装:
+
+```bash
+brew install --cask oroiteS/tap/openwithpanel
+xattr -dr com.apple.quarantine /Applications/OpenWithPanel.app
+```
+
+> [!NOTE]
+> 未签名公证,`brew install` 结束时会直接打印上面这条 `xattr` 命令(cask 的
+> `caveats`),复制执行一次即可,否则首次打开提示「已损坏」。App 内置的
+> OpenWithPanel Helper 在 bundle 内部,`-dr` 递归会一并去掉它的隔离标记。
+
 ## 自动同步
 
 `.github/workflows/sync.yml` 按 cron `*/30 * * * *`(即每 30 分钟)运行

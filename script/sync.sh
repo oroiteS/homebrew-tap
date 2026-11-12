@@ -7,6 +7,7 @@ set -euo pipefail
 declare -A UPSTREAM=(
   [todolite]="oroiteS/todo"
   [feiwu]="oroiteS/quark-downloader"
+  [openwithpanel]="oroiteS/openwithpanel"
 )
 declare -A ASSET_PREFIX=(
   [todolite]="TodoLite"   # 资产命名:TodoLite_<版本>_aarch64.dmg / _x64.dmg
@@ -14,6 +15,7 @@ declare -A ASSET_PREFIX=(
 # universal 单文件资产(单 sha256):ASSET_TEMPLATE 里写完整资产名模板。
 declare -A ASSET_TEMPLATE=(
   [feiwu]="feiwu-v{version}-macos-universal.dmg"
+  [openwithpanel]="OpenWithPanel-{version}.dmg"
 )
 
 git config user.name "github-actions[bot]"
