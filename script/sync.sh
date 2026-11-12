@@ -34,10 +34,6 @@ for token in "${!UPSTREAM[@]}"; do
     continue
   fi
   version="${tag#v}"
-  if grep -q "version \"$version\"" "$file"; then
-    echo "$token: 已是 $version,无需更新"
-    continue
-  fi
 
   # universal 单 sha256 分支:取模板资产的单 digest,替换单行 sha256
   if [[ -n ${ASSET_TEMPLATE[$token]:-} ]]; then
@@ -51,6 +47,14 @@ for token in "${!UPSTREAM[@]}"; do
     fi
     if [[ -z $sha ]]; then
       echo "::error::$token $version 缺少 sha256,跳过(不阻断其他 cask)"
+      continue
+    fi
+
+    # 只有版本和校验和都对得上才算「无需更新」:同一个版本被重新打包、或 cask 是
+    # 手工放过(本地构建的 sha)时,只比版本号会漏掉 sha256 漂移,用户安装就会
+    # checksum mismatch
+    if grep -q "version \"$version\"" "$file" && grep -q "sha256 \"$sha\"" "$file"; then
+      echo "$token: 已是 $version,校验和一致,无需更新"
       continue
     fi
 
@@ -82,6 +86,14 @@ for token in "${!UPSTREAM[@]}"; do
     intel=$(curl -fsSL "https://github.com/$repo/releases/download/$tag/${prefix}_${version}_x64.dmg" | shasum -a 256 | awk '{print $1}')
   fi
   [[ -n $arm && -n $intel ]] || { echo "::error::$token $version 缺少 sha256(arm=$arm intel=$intel)"; exit 1; }
+
+  # 同 universal 分支:版本和两个校验和全都一致才跳过,避免 sha256 漂移被漏掉
+  if grep -q "version \"$version\"" "$file" \
+    && grep -q "sha256 arm:   \"$arm\"" "$file" \
+    && grep -q "intel: \"$intel\"" "$file"; then
+    echo "$token: 已是 $version,校验和一致,无需更新"
+    continue
+  fi
 
   sed -i.bak \
     -e "s/^  version \".*\"$/  version \"$version\"/" \
